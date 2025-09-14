@@ -3,7 +3,7 @@ class UserModel {
   final String email;
   final String password;
 
-  UserModel({
+  const UserModel({
     required this.name,
     required this.email,
     required this.password,
@@ -11,12 +11,15 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      name: json['name'],
-      email: json['email'],
-      password: json['password'],
+      name: json['name']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      password: json['password']?.toString() ?? '',
     );
   }
 
-  Map<String, dynamic> toJson() =>
-      {'name': name, 'email': email, 'password': password};
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'email': email,
+        'password': password,
+      };
 }

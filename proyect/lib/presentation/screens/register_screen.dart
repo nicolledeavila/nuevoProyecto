@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/models/user_model.dart';
-import '../../logic/bloc/user_bloc.dart';
-import '../../logic/bloc/user_event.dart';
-import '../../logic/bloc/user_state.dart';
+import '../../logic/register/register_bloc.dart';
+import '../../logic/register/register_event.dart';
+import '../../logic/register/register_state.dart';
 import 'profile_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -28,16 +28,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
         backgroundColor: Colors.deepPurple,
         elevation: 0,
       ),
-      body: BlocListener<UserBloc, UserState>(
+      body: BlocListener<RegisterBloc, RegisterState>(
         listener: (context, state) {
-          if (state is UserRegistered) {
+          if (state is RegisterSuccess) {
+            // state es RegisterSuccess -> tiene .user
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => ProfileScreen(user: state.user),
               ),
             );
-          } else if (state is UserError) {
+          } else if (state is RegisterError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),
             );
@@ -59,16 +60,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Ícono de usuario
                       CircleAvatar(
                         radius: 40,
                         backgroundColor: Colors.deepPurple[200],
-                        child: const Icon(Icons.person,
-                            size: 50, color: Colors.white),
+                        child:
+                            const Icon(Icons.person, size: 50, color: Colors.white),
                       ),
                       const SizedBox(height: 20),
-
-                      // Campo nombre
                       TextFormField(
                         controller: _nameController,
                         decoration: InputDecoration(
@@ -78,12 +76,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        validator: (v) =>
-                            v!.isEmpty ? "Ingrese un nombre" : null,
+                        validator: (v) => v!.isEmpty ? "Ingrese un nombre" : null,
                       ),
                       const SizedBox(height: 16),
-
-                      // Campo email
                       TextFormField(
                         controller: _emailController,
                         decoration: InputDecoration(
@@ -93,12 +88,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        validator: (v) =>
-                            v!.isEmpty ? "Ingrese un correo" : null,
+                        validator: (v) => v!.isEmpty ? "Ingrese un correo" : null,
                       ),
                       const SizedBox(height: 16),
-
-                      // Campo contraseña
                       TextFormField(
                         controller: _passwordController,
                         obscureText: true,
@@ -113,11 +105,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             v!.isEmpty ? "Ingrese una contraseña" : null,
                       ),
                       const SizedBox(height: 24),
-
-                      // Botón de registro
-                      BlocBuilder<UserBloc, UserState>(
+                      BlocBuilder<RegisterBloc, RegisterState>(
                         builder: (context, state) {
-                          if (state is UserLoading) {
+                          if (state is RegisterLoading) {
                             return const CircularProgressIndicator();
                           }
                           return SizedBox(
@@ -130,24 +120,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     email: _emailController.text,
                                     password: _passwordController.text,
                                   );
-                                  context
-                                      .read<UserBloc>()
-                                      .add(RegisterUserEvent(user));
+                                  context.read<RegisterBloc>().add(RegisterUserEvent(user));
                                 }
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.deepPurple,
                                 foregroundColor: Colors.white,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 14),
+                                padding: const EdgeInsets.symmetric(vertical: 14),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              child: const Text(
-                                "Registrar",
-                                style: TextStyle(fontSize: 16),
-                              ),
+                              child: const Text("Registrar", style: TextStyle(fontSize: 16)),
                             ),
                           );
                         },
